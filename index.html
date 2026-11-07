@@ -1,0 +1,418 @@
+<!doctype html>
+<!--
+  Discord Token Helper - by raregh0st
+  https://github.com/raregh0st/discord-token-helper
+
+  Everything lives in this one file: instructions, the bookmarklet, and the
+  console snippet. No build step, no dependencies, no separate source files.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Discord Token Helper - by raregh0st</title>
+    <meta name="author" content="raregh0st" />
+    <meta
+      name="description"
+      content="Copy the auth token of your own logged-in Discord account. Bookmarklet + console snippet, by raregh0st."
+    />
+    <meta property="og:title" content="Discord Token Helper - by raregh0st" />
+    <meta property="og:site_name" content="raregh0st" />
+    <meta
+      property="og:description"
+      content="Copy the auth token of your own logged-in Discord account. Bookmarklet + console snippet."
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0d12;
+        --panel: #151922;
+        --panel-2: #0d1017;
+        --line: #232a38;
+        --text: #e6e8ee;
+        --muted: #9aa3b2;
+        --blurple: #5865f2;
+        --green: #57f287;
+        --red: #ed4245;
+      }
+      * { box-sizing: border-box; }
+      html, body { min-height: 100%; }
+      body {
+        margin: 0;
+        background: radial-gradient(1100px 620px at 50% -12%, #1d2333, var(--bg));
+        color: var(--text);
+        font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        display: grid;
+        place-items: start center;
+        padding: 40px 16px 96px;
+        overflow-x: hidden;
+      }
+
+      /* faint diagonal watermark behind everything */
+      .watermark {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        z-index: 0;
+        pointer-events: none;
+        user-select: none;
+        font-size: min(24vw, 300px);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        color: #ffffff06;
+        transform: rotate(-18deg);
+        white-space: nowrap;
+      }
+      .watermark span {
+        -webkit-text-stroke: 1px #ffffff0a;
+        color: transparent;
+      }
+
+      main {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 820px;
+        background: linear-gradient(180deg, #171b25, var(--panel));
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 34px;
+        box-shadow: 0 28px 90px #0009;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #8ea1e1;
+        text-decoration: none;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .eyebrow svg { width: 14px; height: 14px; }
+      h1 { margin: 0 0 6px; font-size: clamp(26px, 4vw, 34px); letter-spacing: -0.02em; }
+      .byline { margin: 0 0 4px; color: var(--muted); }
+      .byline a { color: #a9b7f5; text-decoration: none; font-weight: 600; }
+      .byline a:hover { text-decoration: underline; }
+
+      .warn {
+        border-left: 4px solid var(--red);
+        background: #2a1416;
+        color: #ffb9bb;
+        padding: 15px 17px;
+        border-radius: 10px;
+        margin: 26px 0 8px;
+        font-size: 15px;
+      }
+      .warn strong { color: #fff; }
+
+      h2 { margin: 34px 0 10px; font-size: 19px; }
+      h2 .num {
+        display: inline-grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        margin-right: 10px;
+        border-radius: 8px;
+        background: #1e2432;
+        border: 1px solid var(--line);
+        color: #8ea1e1;
+        font-size: 14px;
+        vertical-align: 2px;
+      }
+      p { margin: 0 0 12px; color: var(--muted); }
+      ol { color: var(--muted); padding-left: 22px; margin: 0 0 14px; }
+      ol li { margin-bottom: 8px; }
+      a { color: #8ea1e1; }
+      code {
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 2px 6px;
+        color: var(--green);
+        font-size: 0.9em;
+      }
+
+      .bookmarklet {
+        display: inline-block;
+        margin: 4px 0 10px;
+        padding: 13px 26px;
+        background: linear-gradient(180deg, #6772f5, var(--blurple));
+        color: #fff;
+        font-weight: 800;
+        text-decoration: none;
+        border-radius: 10px;
+        box-shadow: 0 10px 26px #5865f255;
+        cursor: grab;
+      }
+      .bookmarklet:active { transform: translateY(1px); cursor: grabbing; }
+
+      .code {
+        position: relative;
+        margin: 10px 0 0;
+      }
+      .code pre {
+        margin: 0;
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 16px 16px;
+        overflow: auto;
+        max-height: 300px;
+      }
+      .code pre code {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: #c8d1e0;
+        font-size: 12.5px;
+        line-height: 1.6;
+        white-space: pre;
+      }
+      .copy {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
+        font: 600 12px/1 inherit;
+        color: #dfe3ee;
+        background: #1e2432;
+        border: 1px solid #2f3748;
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      .copy:hover { background: #262e3f; }
+      .copy.done { color: #0b0d12; background: var(--green); border-color: var(--green); }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0 16px;
+        margin: 10px 0;
+        background: #12161f;
+      }
+      details summary {
+        cursor: pointer;
+        padding: 14px 0;
+        font-weight: 600;
+        color: var(--text);
+      }
+      details p { margin: 0 0 14px; }
+
+      hr.sep {
+        border: 0;
+        border-top: 1px solid var(--line);
+        margin: 34px 0 0;
+      }
+
+      footer {
+        margin-top: 26px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: #6b7385;
+        font-size: 13px;
+      }
+      footer a { color: #8ea1e1; text-decoration: none; }
+      footer a:hover { text-decoration: underline; }
+      .sig {
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        background: linear-gradient(90deg, #8ea1e1, #5865f2);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      /* fixed GitHub badge / watermark */
+      .badge {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 50;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border-radius: 999px;
+        background: #12161fdd;
+        border: 1px solid #2a3242;
+        color: #dfe3ee;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 13px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px #0007;
+      }
+      .badge:hover { border-color: #3a4559; color: #fff; }
+      .badge svg { width: 17px; height: 17px; }
+
+      @media (max-width: 560px) {
+        main { padding: 24px 18px; }
+        .badge { right: 10px; bottom: 10px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="watermark" aria-hidden="true"><span>raregh0st</span></div>
+
+    <main>
+      <header>
+        <a class="eyebrow" href="https://github.com/raregh0st" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          github.com/raregh0st
+        </a>
+        <h1>Discord Token Helper</h1>
+        <p class="byline">Copy the auth token of the Discord account you are already logged in as. Made by <a href="https://github.com/raregh0st" target="_blank" rel="noopener">raregh0st</a>.</p>
+
+        <div class="warn">
+          <strong>Never share your token.</strong> Anyone with it has full access to your account
+          and can bypass your password and 2FA. Using a token to automate a user account (a
+          "self-bot") violates Discord's Terms of Service and can get your account terminated.
+          Use this only on your own account, at your own risk.
+        </div>
+      </header>
+
+      <section>
+        <h2><span class="num">1</span>Bookmarklet (one click)</h2>
+        <p>Drag this button to your bookmarks bar, then click it while you are on
+          <a href="https://discord.com/app" target="_blank" rel="noopener">discord.com/app</a> and logged in.</p>
+        <a class="bookmarklet" id="drag" href="#" draggable="true">Get Discord Token</a>
+        <p>Or create a bookmark manually and paste this entire line as its URL (it must stay on one line):</p>
+        <div class="code">
+          <button class="copy" type="button" data-target="bookmarklet-code">Copy</button>
+          <pre><code id="bookmarklet-code">javascript:(()=&gt;{const show=m=&gt;{const b=document.createElement('div');b.style.cssText='position:fixed;inset:10% 15%;z-index:2147483647;background:#0b0d12;color:#57f287;border:2px solid #5865f2;border-radius:10px;padding:24px;font:14px/1.5 monospace;white-space:pre-wrap;word-break:break-all;overflow:auto;box-shadow:0 10px 40px #000a;cursor:pointer';b.textContent=m;b.onclick=()=&gt;b.remove();document.body.appendChild(b)};let t=null;try{const r=localStorage.getItem('token');if(r){try{t=JSON.parse(r)}catch{t=r}}}catch(e){}if(!t){try{window.webpackChunkdiscord_app.push([[Symbol()],{},q=&gt;{for(const m of Object.values(q.c)){try{const e=m&amp;&amp;m.exports;if(!e)continue;const f=e.getToken||(e.default&amp;&amp;e.default.getToken);if(typeof f==='function'){t=f();break}}catch(_){}}}])}catch(e){}}if(t){try{navigator.clipboard.writeText(t)}catch(e){}show('Your token has been copied to your clipboard.\n\n'+t+'\n\n(click anywhere in this box to close)\n\n- github.com/raregh0st')}else{show('No token found.\n\nMake sure you are logged in at https://discord.com/app and try again.\n\n- github.com/raregh0st')}})()</code></pre>
+        </div>
+      </section>
+
+      <section>
+        <h2><span class="num">2</span>DevTools console</h2>
+        <ol>
+          <li>Open <a href="https://discord.com/app" target="_blank" rel="noopener">discord.com/app</a> and log in.</li>
+          <li>Press <code>F12</code> (or <code>Ctrl</code>+<code>Shift</code>+<code>I</code>) and open the <strong>Console</strong> tab.</li>
+          <li>Paste the snippet below and press Enter.</li>
+        </ol>
+        <div class="code">
+          <button class="copy" type="button" data-target="console-code">Copy</button>
+          <pre><code id="console-code">/* raregh0st */ (()=&gt;{let w=window.webpackChunkdiscord_app,t;w.push([[Symbol()],{},o=&gt;{for(const m of Object.values(o.c)){try{const e=m&amp;&amp;m.exports;if(!e)continue;const f=e.getToken||(e.default&amp;&amp;e.default.getToken);if(typeof f==='function'){t=f();break}}catch{}}}]);return t})()</code></pre>
+        </div>
+        <p style="margin-top: 12px; font-size: 14px;">Both methods copy the token to your clipboard and show it in an overlay.</p>
+      </section>
+
+      <hr class="sep" />
+
+      <section>
+        <h2>Troubleshooting</h2>
+        <details>
+          <summary>It returns <code>undefined</code> or says "No token found"</summary>
+          <p>Make sure you are on <a href="https://discord.com/app" target="_blank" rel="noopener">discord.com/app</a>
+            <strong>and logged in</strong>, then reload the page and try again. Discord loads modules lazily.</p>
+        </details>
+        <details>
+          <summary>Clicking the bookmark does nothing</summary>
+          <p>Some browsers strip the <code>javascript:</code> prefix from pasted URLs. Re-add it manually, or use the console method.</p>
+        </details>
+        <details>
+          <summary>The token is wrapped in quotes</summary>
+          <p>Discord stores it as JSON, so both snippets strip the quotes with <code>JSON.parse</code> for you.</p>
+        </details>
+        <details>
+          <summary>It worked before, not anymore</summary>
+          <p>Discord changes its internals regularly. Open an issue on
+            <a href="https://github.com/raregh0st/discord-token-helper/issues" target="_blank" rel="noopener">GitHub</a>
+            with your Discord build (web/desktop) and the error.</p>
+        </details>
+      </section>
+
+      <section>
+        <h2>How it works</h2>
+        <p>Discord is a webpack app. Webpack keeps a global chunk registry called
+          <code>webpackChunkdiscord_app</code>, and pushing a fake chunk into it makes webpack call
+          your callback with a <code>require</code> function:</p>
+        <div class="code">
+          <pre><code>window.webpackChunkdiscord_app.push([
+  [Symbol()],   // fake chunk id
+  {},           // no new modules
+  (req) =&gt; {
+    // req.c is the module cache: { [moduleId]: { exports } }
+  },
+]);</code></pre>
+        </div>
+        <p>Discord's auth store exports <code>getToken()</code> / <code>setToken()</code>. The snippet
+          walks the module cache, finds the module exposing <code>getToken</code> (sometimes as
+          <code>exports.getToken</code>, sometimes as <code>exports.default.getToken</code>) and calls it.
+          As a fast path it first checks <code>localStorage.getItem("token")</code>, where the web client
+          keeps the same value as a JSON string.</p>
+        <p>The older bookmarklet that used an <code>&lt;iframe&gt;</code> + <code>document.write</code> broke
+          because it called <code>location.reload()</code> first (unloading the page before the script
+          finished) and because <code>document.write()</code> after load wipes the whole Discord UI. This
+          version renders a normal element on top of the page instead, so nothing is destroyed.</p>
+      </section>
+
+      <hr class="sep" />
+
+      <footer>
+        <span>&copy; 2026 <a href="https://github.com/raregh0st" target="_blank" rel="noopener">raregh0st</a>. MIT licensed.</span>
+        <span class="sig">raregh0st</span>
+      </footer>
+    </main>
+
+    <a class="badge" href="https://github.com/raregh0st" target="_blank" rel="noopener" title="raregh0st on GitHub">
+      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      raregh0st
+    </a>
+
+    <script>
+      (function () {
+        var code = function (id) { return document.getElementById(id).textContent.trim(); };
+
+        // Turn the displayed bookmarklet into a draggable javascript: URL.
+        var raw = code('bookmarklet-code');
+        var body = raw.replace(/^javascript:/, '');
+        var drag = document.getElementById('drag');
+        drag.setAttribute('href', 'javascript:' + encodeURIComponent(body));
+        drag.setAttribute('title', 'raregh0st - drag me to your bookmarks bar');
+
+        // Copy buttons.
+        document.querySelectorAll('.copy').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var text = code(btn.getAttribute('data-target'));
+            var done = function () {
+              var label = btn.textContent;
+              btn.textContent = 'Copied!';
+              btn.classList.add('done');
+              setTimeout(function () {
+                btn.textContent = label;
+                btn.classList.remove('done');
+              }, 1500);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(done, fallback);
+            } else {
+              fallback();
+            }
+            function fallback() {
+              var ta = document.createElement('textarea');
+              ta.value = text;
+              ta.style.position = 'fixed';
+              ta.style.opacity = '0';
+              document.body.appendChild(ta);
+              ta.select();
+              try { document.execCommand('copy'); } catch (e) {}
+              ta.remove();
+              done();
+            }
+          });
+        });
+
+        console.log('%c raregh0st %c discord-token-helper', 'background:#5865f2;color:#fff;border-radius:4px 0 0 4px;padding:2px 6px', 'background:#151922;color:#8ea1e1;border-radius:0 4px 4px 0;padding:2px 6px');
+      })();
+    </script>
+  </body>
+</html>
