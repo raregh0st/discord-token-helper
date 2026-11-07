@@ -92,6 +92,42 @@ The full command, for pasting into the DevTools console on `discord.com/app`:
 
 ---
 
+## On a phone
+
+Bookmarklets work in **iPhone Safari**, but **Chrome for Android blocks `javascript:` URLs**. Use one
+of these instead.
+
+### iPhone / iPad — Safari (works)
+
+1. On the page, tap **Copy** under the bookmarklet code.
+2. In Safari, bookmark any page: **Share → Add Bookmark**.
+3. Open **Bookmarks → Edit**, tap the new bookmark, replace its address with the copied code, and
+   name it *Discord Token*.
+4. Open <https://discord.com/app>, log in, switch to the desktop site
+   (**aA → Request Desktop Website**), then tap the bookmark.
+
+### Android — Firefox
+
+Chrome for Android will not run the bookmarklet. Install Firefox and sync the bookmark from a Firefox
+account, or add it in Firefox's bookmark manager with the copied code as the URL. Then open
+<https://discord.com/app> in Firefox (desktop site) and open the bookmark.
+
+### No bookmarklets — remote debugging
+
+- **Android:** enable USB debugging, connect to a computer, open `chrome://inspect` in desktop
+  Chrome, open `discord.com/app` on the phone, and run the console snippet in the remote DevTools
+  console.
+- **iPhone:** enable **Settings → Safari → Advanced → Web Inspector**, connect to a Mac, and use
+  **Safari → Develop** to run the snippet.
+
+**Simplest option:** a token belongs to the account, not the device. If you have a computer, log in
+there once, grab the token with Method 1 or 2, and use it wherever you need it. It stays valid until
+you log out, change your password, or change 2FA.
+
+<p align="right"><sub>raregh0st</sub></p>
+
+---
+
 ## Troubleshooting
 
 | Problem | Fix |

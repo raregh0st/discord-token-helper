@@ -57,7 +57,8 @@
         z-index: 0;
         pointer-events: none;
         user-select: none;
-        font-size: min(24vw, 300px);
+        overflow: hidden;
+        font-size: min(22vw, 300px);
         font-weight: 900;
         letter-spacing: -0.04em;
         color: #ffffff06;
@@ -74,6 +75,7 @@
         z-index: 1;
         width: 100%;
         max-width: 820px;
+        min-width: 0;
         background: linear-gradient(180deg, #171b25, var(--panel));
         border: 1px solid var(--line);
         border-radius: 18px;
@@ -141,6 +143,9 @@
       p { margin: 0 0 12px; color: var(--muted); }
       ol { color: var(--muted); padding-left: 22px; margin: 0 0 14px; }
       ol li { margin-bottom: 8px; }
+      ul { color: var(--muted); padding-left: 22px; margin: 0 0 14px; }
+      ul li { margin-bottom: 8px; }
+      h3 { margin: 22px 0 6px; font-size: 15px; color: #cfd6e6; }
       a { color: #8ea1e1; }
       code {
         background: var(--panel-2);
@@ -318,6 +323,44 @@
           <pre><code id="console-code">/* raregh0st */ (()=&gt;{const n=v=&gt;typeof v==='string'?v:(v&amp;&amp;(v.token||v.value||v.accessToken||v.access_token||v.authToken))||'';let w=window.webpackChunkdiscord_app,t;w.push([[Symbol()],{},o=&gt;{const mods=Object.values(o.c);const pick=s=&gt;{for(const m of mods){try{const e=m&amp;&amp;m.exports;if(!e)continue;const x=s?(e.setToken?e:e.default&amp;&amp;e.default.setToken?e.default:null):e;const f=x&amp;&amp;x.getToken;if(typeof f==='function'){const v=n(f());if(v)return v}}catch{}}return''};t=pick(true)||pick(false)}]);return t})()</code></pre>
         </div>
         <p style="margin-top: 12px; font-size: 14px;">Both methods copy the token to your clipboard and show it in an overlay.</p>
+      </section>
+
+      <hr class="sep" />
+
+      <section>
+        <h2>On a phone</h2>
+        <p>Bookmarklets work in <strong>iPhone Safari</strong>, but <strong>Chrome for Android blocks
+          <code>javascript:</code> URLs</strong>. Use one of these instead.</p>
+
+        <h3>iPhone / iPad — Safari (works)</h3>
+        <ol>
+          <li>On this page, tap <strong>Copy</strong> under the bookmarklet code.</li>
+          <li>In Safari, bookmark any page: <strong>Share → Add Bookmark</strong>.</li>
+          <li>Open <strong>Bookmarks → Edit</strong>, tap the new bookmark, replace its address with the
+            copied code, and name it <em>Discord Token</em>.</li>
+          <li>Open <a href="https://discord.com/app" target="_blank" rel="noopener">discord.com/app</a>,
+            log in, switch to the desktop site (<strong>aA → Request Desktop Website</strong>), then tap
+            the bookmark.</li>
+        </ol>
+
+        <h3>Android — Firefox</h3>
+        <p>Chrome for Android will not run the bookmarklet. Install Firefox and sync the bookmark from a
+          Firefox account, or add it in Firefox's bookmark manager with the copied code as the URL. Then
+          open <a href="https://discord.com/app" target="_blank" rel="noopener">discord.com/app</a> in
+          Firefox (desktop site) and open the bookmark.</p>
+
+        <h3>No bookmarklets — remote debugging</h3>
+        <ul>
+          <li><strong>Android:</strong> enable USB debugging, connect to a computer, open
+            <code>chrome://inspect</code> in desktop Chrome, open <code>discord.com/app</code> on the
+            phone, and run the console snippet in the remote DevTools console.</li>
+          <li><strong>iPhone:</strong> enable <strong>Settings → Safari → Advanced → Web Inspector</strong>,
+            connect to a Mac, and use <strong>Safari → Develop</strong> to run the snippet.</li>
+        </ul>
+
+        <p><strong>Simplest option:</strong> a token belongs to the account, not the device. If you have a
+          computer, log in there once, grab the token with Method 1 or 2, and use it wherever you need it.
+          It stays valid until you log out, change your password, or change 2FA.</p>
       </section>
 
       <hr class="sep" />
