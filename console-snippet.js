@@ -1,4 +1,11 @@
 /**
+ * console-snippet.js — the recommended method.
+ *
+ * WHAT THIS FILE IS
+ *   A self-contained snippet you paste into the DevTools console on
+ *   https://discord.com/app. It finds the auth token of the account you are
+ *   logged in as, logs it, copies it, and returns it. Nothing is sent anywhere.
+ *
  * Get the auth token of the Discord account you are currently logged in as.
  *
  * HOW TO USE
