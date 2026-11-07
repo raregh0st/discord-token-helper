@@ -9,8 +9,9 @@
  *   template.html        page layout with __BOOKMARKLET__ / __CONSOLE__ placeholders
  *
  * OUTPUTS
- *   bookmarklet.txt      single-line "javascript:..." URL for a bookmark
  *   index.html           drag-and-drop page with the URL-encoded bookmarklet
+ *   README.md            refreshes the bookmarklet line between the
+ *                        BOOKMARKLET:START / BOOKMARKLET:END markers
  *
  * No dependencies. Note that bookmarklet.src.js may only use BLOCK comments,
  * because line comments would survive the whitespace collapsing below and
@@ -30,7 +31,24 @@ const src = read('bookmarklet.src.js')
 const bookmarklet = 'javascript:' + src;
 const encoded = 'javascript:' + encodeURIComponent(src);
 
-write('bookmarklet.txt', bookmarklet + '\n');
+/**
+ * Keep the bookmarklet shown in README.md in sync with bookmarklet.src.js.
+ * The README owns the prose; everything between the two markers is generated.
+ */
+const syncReadme = (line) => {
+  const start = '<!-- BOOKMARKLET:START -->';
+  const end = '<!-- BOOKMARKLET:END -->';
+  const readme = read('README.md');
+  const from = readme.indexOf(start);
+  const to = readme.indexOf(end, from);
+  if (from === -1 || to === -1) {
+    throw new Error('README.md is missing the BOOKMARKLET:START / BOOKMARKLET:END markers');
+  }
+  const block = `${start}\n\`\`\`javascript\n${line}\n\`\`\`\n${end}`;
+  write('README.md', readme.slice(0, from) + block + readme.slice(to + end.length));
+};
+
+syncReadme(bookmarklet);
 
 const consoleOneLiner = (() => {
   const file = read('console-snippet.js');
@@ -57,5 +75,5 @@ const html = fill(
 write('index.html', html);
 
 console.log('Build OK');
-console.log('  bookmarklet.txt : %d chars', bookmarklet.length);
-console.log('  index.html      : %d chars', fs.statSync(path.join(root, 'index.html')).size);
+console.log('  README.md bookmarklet : %d chars', bookmarklet.length);
+console.log('  index.html            : %d chars', fs.statSync(path.join(root, 'index.html')).size);

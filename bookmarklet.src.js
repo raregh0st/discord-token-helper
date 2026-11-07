@@ -6,8 +6,8 @@
  *   2. If that fails, walks Discord's webpack module cache and calls getToken().
  *   3. Copies the token to the clipboard and shows it in an in-page overlay.
  *
- * This file is not used directly. Edit it, then run `node build.js` to
- * regenerate bookmarklet.txt and index.html.
+ * This file is not used directly. Edit it, then run `node build.js` to refresh
+ * the bookmarklet line in README.md and regenerate index.html.
  *
  * Keep comments as BLOCK comments only — a line comment would survive the
  * build's whitespace collapsing and break the one-liner.
