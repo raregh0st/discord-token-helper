@@ -287,7 +287,7 @@
         <p>Or create a bookmark manually and paste this entire line as its URL (it must stay on one line):</p>
         <div class="code">
           <button class="copy" type="button" data-target="bookmarklet-code">Copy</button>
-          <pre><code id="bookmarklet-code">javascript:(()=&gt;{const show=m=&gt;{const b=document.createElement('div');b.style.cssText='position:fixed;inset:10% 15%;z-index:2147483647;background:#0b0d12;color:#57f287;border:2px solid #5865f2;border-radius:10px;padding:24px;font:14px/1.5 monospace;white-space:pre-wrap;word-break:break-all;overflow:auto;box-shadow:0 10px 40px #000a;cursor:pointer';b.textContent=m;b.onclick=()=&gt;b.remove();document.body.appendChild(b)};let t=null;try{const r=localStorage.getItem('token');if(r){try{t=JSON.parse(r)}catch{t=r}}}catch(e){}if(!t){try{window.webpackChunkdiscord_app.push([[Symbol()],{},q=&gt;{for(const m of Object.values(q.c)){try{const e=m&amp;&amp;m.exports;if(!e)continue;const f=e.getToken||(e.default&amp;&amp;e.default.getToken);if(typeof f==='function'){t=f();break}}catch(_){}}}])}catch(e){}}if(t){try{navigator.clipboard.writeText(t)}catch(e){}show('Your token has been copied to your clipboard.\n\n'+t+'\n\n(click anywhere in this box to close)\n\n- github.com/raregh0st')}else{show('No token found.\n\nMake sure you are logged in at https://discord.com/app and try again.\n\n- github.com/raregh0st')}})()</code></pre>
+          <pre><code id="bookmarklet-code">javascript:(()=&gt;{const n=v=&gt;typeof v==='string'?v:(v&amp;&amp;(v.token||v.value||v.accessToken||v.access_token||v.authToken))||'';const cp=v=&gt;{try{navigator.clipboard.writeText(v).catch(()=&gt;{})}catch(e){const a=document.createElement('textarea');a.value=v;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}};const show=m=&gt;{const b=document.createElement('div');b.style.cssText='position:fixed;inset:10% 15%;z-index:2147483647;background:#0b0d12;color:#57f287;border:2px solid #5865f2;border-radius:10px;padding:24px;font:14px/1.5 monospace;white-space:pre-wrap;word-break:break-all;overflow:auto;box-shadow:0 10px 40px #000a;cursor:pointer';b.textContent=m;b.onclick=()=&gt;b.remove();document.body.appendChild(b)};let t='';try{const r=localStorage.getItem('token');if(r){try{t=n(JSON.parse(r))}catch(e){t=n(r)}}}catch(e){}if(!t){try{window.webpackChunkdiscord_app.push([[Symbol()],{},q=&gt;{const mods=Object.values(q.c);const pick=s=&gt;{for(const m of mods){try{const e=m&amp;&amp;m.exports;if(!e)continue;const x=s?(e.setToken?e:e.default&amp;&amp;e.default.setToken?e.default:null):e;const f=x&amp;&amp;x.getToken;if(typeof f==='function'){const v=n(f());if(v)return v}}catch(_){}}return''};t=pick(true)||pick(false)}])}catch(e){}}if(t){cp(t);show('Your token has been copied to your clipboard.\n\n'+t+'\n\n(click anywhere in this box to close)\n\n- github.com/raregh0st')}else{show('No token found.\n\nMake sure you are logged in at https://discord.com/app and try again.\n\n- github.com/raregh0st')}})()</code></pre>
         </div>
       </section>
 
@@ -300,7 +300,7 @@
         </ol>
         <div class="code">
           <button class="copy" type="button" data-target="console-code">Copy</button>
-          <pre><code id="console-code">/* raregh0st */ (()=&gt;{let w=window.webpackChunkdiscord_app,t;w.push([[Symbol()],{},o=&gt;{for(const m of Object.values(o.c)){try{const e=m&amp;&amp;m.exports;if(!e)continue;const f=e.getToken||(e.default&amp;&amp;e.default.getToken);if(typeof f==='function'){t=f();break}}catch{}}}]);return t})()</code></pre>
+          <pre><code id="console-code">/* raregh0st */ (()=&gt;{const n=v=&gt;typeof v==='string'?v:(v&amp;&amp;(v.token||v.value||v.accessToken||v.access_token||v.authToken))||'';let w=window.webpackChunkdiscord_app,t;w.push([[Symbol()],{},o=&gt;{const mods=Object.values(o.c);const pick=s=&gt;{for(const m of mods){try{const e=m&amp;&amp;m.exports;if(!e)continue;const x=s?(e.setToken?e:e.default&amp;&amp;e.default.setToken?e.default:null):e;const f=x&amp;&amp;x.getToken;if(typeof f==='function'){const v=n(f());if(v)return v}}catch{}}return''};t=pick(true)||pick(false)}]);return t})()</code></pre>
         </div>
         <p style="margin-top: 12px; font-size: 14px;">Both methods copy the token to your clipboard and show it in an overlay.</p>
       </section>
@@ -347,6 +347,9 @@
         <p>Discord's auth store exports <code>getToken()</code> / <code>setToken()</code>. The snippet
           walks the module cache, finds the module exposing <code>getToken</code> (sometimes as
           <code>exports.getToken</code>, sometimes as <code>exports.default.getToken</code>) and calls it.
+          The result is normalized to a string: if <code>getToken()</code> returns an object, its
+          <code>token</code> / <code>value</code> / <code>accessToken</code> field is used, so you get the
+          token itself and never <code>[object Object]</code>.
           As a fast path it first checks <code>localStorage.getItem("token")</code>, where the web client
           keeps the same value as a JSON string.</p>
         <p>The older bookmarklet that used an <code>&lt;iframe&gt;</code> + <code>document.write</code> broke

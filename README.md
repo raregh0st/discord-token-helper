@@ -73,7 +73,7 @@ token work happens entirely on `discord.com` when you click the bookmark or run 
 The full command, for reference or for pasting into a bookmark manually:
 
 ```javascript
-javascript:(()=>{const show=m=>{const b=document.createElement('div');b.style.cssText='position:fixed;inset:10% 15%;z-index:2147483647;background:#0b0d12;color:#57f287;border:2px solid #5865f2;border-radius:10px;padding:24px;font:14px/1.5 monospace;white-space:pre-wrap;word-break:break-all;overflow:auto;box-shadow:0 10px 40px #000a;cursor:pointer';b.textContent=m;b.onclick=()=>b.remove();document.body.appendChild(b)};let t=null;try{const r=localStorage.getItem('token');if(r){try{t=JSON.parse(r)}catch{t=r}}}catch(e){}if(!t){try{window.webpackChunkdiscord_app.push([[Symbol()],{},q=>{for(const m of Object.values(q.c)){try{const e=m&&m.exports;if(!e)continue;const f=e.getToken||(e.default&&e.default.getToken);if(typeof f==='function'){t=f();break}}catch(_){}}}])}catch(e){}}if(t){try{navigator.clipboard.writeText(t)}catch(e){}show('Your token has been copied to your clipboard.\n\n'+t+'\n\n(click anywhere in this box to close)\n\n- github.com/raregh0st')}else{show('No token found.\n\nMake sure you are logged in at https://discord.com/app and try again.\n\n- github.com/raregh0st')}})()
+javascript:(()=>{const n=v=>typeof v==='string'?v:(v&&(v.token||v.value||v.accessToken||v.access_token||v.authToken))||'';const cp=v=>{try{navigator.clipboard.writeText(v).catch(()=>{})}catch(e){const a=document.createElement('textarea');a.value=v;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}};const show=m=>{const b=document.createElement('div');b.style.cssText='position:fixed;inset:10% 15%;z-index:2147483647;background:#0b0d12;color:#57f287;border:2px solid #5865f2;border-radius:10px;padding:24px;font:14px/1.5 monospace;white-space:pre-wrap;word-break:break-all;overflow:auto;box-shadow:0 10px 40px #000a;cursor:pointer';b.textContent=m;b.onclick=()=>b.remove();document.body.appendChild(b)};let t='';try{const r=localStorage.getItem('token');if(r){try{t=n(JSON.parse(r))}catch(e){t=n(r)}}}catch(e){}if(!t){try{window.webpackChunkdiscord_app.push([[Symbol()],{},q=>{const mods=Object.values(q.c);const pick=s=>{for(const m of mods){try{const e=m&&m.exports;if(!e)continue;const x=s?(e.setToken?e:e.default&&e.default.setToken?e.default:null):e;const f=x&&x.getToken;if(typeof f==='function'){const v=n(f());if(v)return v}}catch(_){}}return''};t=pick(true)||pick(false)}])}catch(e){}}if(t){cp(t);show('Your token has been copied to your clipboard.\n\n'+t+'\n\n(click anywhere in this box to close)\n\n- github.com/raregh0st')}else{show('No token found.\n\nMake sure you are logged in at https://discord.com/app and try again.\n\n- github.com/raregh0st')}})()
 ```
 
 ## Method 2 — DevTools console
@@ -81,7 +81,7 @@ javascript:(()=>{const show=m=>{const b=document.createElement('div');b.style.cs
 The full command, for pasting into the DevTools console on `discord.com/app`:
 
 ```js
-/* raregh0st */ (()=>{let w=window.webpackChunkdiscord_app,t;w.push([[Symbol()],{},o=>{for(const m of Object.values(o.c)){try{const e=m&&m.exports;if(!e)continue;const f=e.getToken||(e.default&&e.default.getToken);if(typeof f==='function'){t=f();break}}catch{}}}]);return t})()
+/* raregh0st */ (()=>{const n=v=>typeof v==='string'?v:(v&&(v.token||v.value||v.accessToken||v.access_token||v.authToken))||'';let w=window.webpackChunkdiscord_app,t;w.push([[Symbol()],{},o=>{const mods=Object.values(o.c);const pick=s=>{for(const m of mods){try{const e=m&&m.exports;if(!e)continue;const x=s?(e.setToken?e:e.default&&e.default.setToken?e.default:null):e;const f=x&&x.getToken;if(typeof f==='function'){const v=n(f());if(v)return v}}catch{}}return''};t=pick(true)||pick(false)}]);return t})()
 ```
 
 ---
@@ -118,7 +118,9 @@ window.webpackChunkdiscord_app.push([
 
 Discord's auth store exports `getToken()` / `setToken()`. The script walks the module cache,
 finds the module that exposes `getToken` (sometimes as `exports.getToken`, sometimes as
-`exports.default.getToken`), and calls it. As a fast path it first checks
+`exports.default.getToken`), and calls it. The result is normalized to a string: if
+`getToken()` returns an object, its `token` / `value` / `accessToken` field is used, so you get
+the token itself and never `[object Object]`. As a fast path it first checks
 `localStorage.getItem("token")`, where the web client keeps the same value as a JSON string.
 
 The older bookmarklet that used an `<iframe>` + `document.write` broke because:
