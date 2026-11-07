@@ -9,9 +9,7 @@ paste into the DevTools console.
 Everything lives in one file — [`index.html`](./index.html): the interface, the instructions,
 and both commands. No install, no build step, no dependencies.
 
-> Inspired by [MarvNC's gist](https://gist.github.com/MarvNC/e601f3603df22f36ebd3102c501116c6)
-> and the classic `webpackChunkdiscord_app` one-liner, cleaned up so it actually works on current
-> Discord builds.
+<!-- raregh0st -->
 
 ---
 
@@ -26,6 +24,8 @@ and both commands. No install, no build step, no dependencies.
   2FA, and cannot get a token for anybody else.
 
 If a token ever leaks, change your password and enable 2FA — that invalidates all sessions.
+
+<p align="right"><sub>raregh0st</sub></p>
 
 ---
 
@@ -66,6 +66,8 @@ Only two things: it turns the text in the bookmarklet code block into a draggabl
 link, and it powers the two **Copy** buttons. It never reads, stores or sends your token. The
 token work happens entirely on `discord.com` when you click the bookmark or run the snippet.
 
+<p align="right"><sub>raregh0st</sub></p>
+
 ---
 
 ## Method 1 — Bookmarklet
@@ -76,6 +78,8 @@ The full command, for reference or for pasting into a bookmark manually:
 javascript:(()=>{const n=v=>typeof v==='string'?v:(v&&(v.token||v.value||v.accessToken||v.access_token||v.authToken))||'';const cp=v=>{try{navigator.clipboard.writeText(v).catch(()=>{})}catch(e){const a=document.createElement('textarea');a.value=v;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}};const show=m=>{const b=document.createElement('div');b.style.cssText='position:fixed;inset:10% 15%;z-index:2147483647;background:#0b0d12;color:#57f287;border:2px solid #5865f2;border-radius:10px;padding:24px;font:14px/1.5 monospace;white-space:pre-wrap;word-break:break-all;overflow:auto;box-shadow:0 10px 40px #000a;cursor:pointer';b.textContent=m;b.onclick=()=>b.remove();document.body.appendChild(b)};let t='';try{const r=localStorage.getItem('token');if(r){try{t=n(JSON.parse(r))}catch(e){t=n(r)}}}catch(e){}if(!t){try{window.webpackChunkdiscord_app.push([[Symbol()],{},q=>{const mods=Object.values(q.c);const pick=s=>{for(const m of mods){try{const e=m&&m.exports;if(!e)continue;const x=s?(e.setToken?e:e.default&&e.default.setToken?e.default:null):e;const f=x&&x.getToken;if(typeof f==='function'){const v=n(f());if(v)return v}}catch(_){}}return''};t=pick(true)||pick(false)}])}catch(e){}}if(t){cp(t);show('Your token has been copied to your clipboard.\n\n'+t+'\n\n(click anywhere in this box to close)\n\n- github.com/raregh0st')}else{show('No token found.\n\nMake sure you are logged in at https://discord.com/app and try again.\n\n- github.com/raregh0st')}})()
 ```
 
+<p align="right"><sub>raregh0st</sub></p>
+
 ## Method 2 — DevTools console
 
 The full command, for pasting into the DevTools console on `discord.com/app`:
@@ -83,6 +87,8 @@ The full command, for pasting into the DevTools console on `discord.com/app`:
 ```js
 /* raregh0st */ (()=>{const n=v=>typeof v==='string'?v:(v&&(v.token||v.value||v.accessToken||v.access_token||v.authToken))||'';let w=window.webpackChunkdiscord_app,t;w.push([[Symbol()],{},o=>{const mods=Object.values(o.c);const pick=s=>{for(const m of mods){try{const e=m&&m.exports;if(!e)continue;const x=s?(e.setToken?e:e.default&&e.default.setToken?e.default:null):e;const f=x&&x.getToken;if(typeof f==='function'){const v=n(f());if(v)return v}}catch{}}return''};t=pick(true)||pick(false)}]);return t})()
 ```
+
+<p align="right"><sub>raregh0st</sub></p>
 
 ---
 
@@ -97,6 +103,8 @@ The full command, for pasting into the DevTools console on `discord.com/app`:
 
 The console is your friend: if the snippet returns `undefined`, check for red errors above your
 input line.
+
+<p align="right"><sub>raregh0st</sub></p>
 
 ---
 
@@ -131,20 +139,7 @@ The older bookmarklet that used an `<iframe>` + `document.write` broke because:
 
 This version renders a normal element on top of the page instead, so nothing is destroyed.
 
----
-
-## What each file does
-
-**`index.html`** — The entire tool in one self-contained file (about 17 KB): page layout and
-styles, the warning, the draggable bookmarklet button, both commands with Copy buttons,
-troubleshooting, the explanation above, and your GitHub branding. There is no build step — the
-JavaScript inside builds the drag link from the code block and wires up the Copy buttons.
-
-**`README.md`** — This guide. It is not used by the page; it exists so the repository is
-readable on GitHub.
-
-**`LICENSE`** — Standard MIT license text (copyright 2026 raregh0st). Not code; it does not
-affect how the scripts behave.
+<p align="right"><sub>raregh0st</sub></p>
 
 ---
 
