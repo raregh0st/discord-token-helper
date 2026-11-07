@@ -1,0 +1,11 @@
+{
+  "name": "discord-token-helper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Get the auth token of your own logged-in Discord account (bookmarklet + console snippet).",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node --check console-snippet.js && node --check bookmarklet.src.js"
+  },
+  "license": "MIT"
+}
